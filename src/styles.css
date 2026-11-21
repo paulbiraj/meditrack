@@ -115,13 +115,50 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.78 0.1 190);
 
-  --gradient-hero: linear-gradient(135deg, oklch(0.31 0.09 258) 0%, oklch(0.4 0.095 235) 60%, oklch(0.5 0.09 200) 100%);
-  --elevation-card: 0 1px 2px oklch(0.25 0.06 258 / 0.04), 0 10px 28px -14px oklch(0.25 0.06 258 / 0.16);
-  --elevation-lift: 0 2px 4px oklch(0.25 0.06 258 / 0.05), 0 18px 40px -16px oklch(0.25 0.06 258 / 0.25);
+  --gradient-hero: linear-gradient(
+    135deg,
+    oklch(0.31 0.09 258) 0%,
+    oklch(0.4 0.095 235) 60%,
+    oklch(0.5 0.09 200) 100%
+  );
+  --elevation-card:
+    0 1px 2px oklch(0.25 0.06 258 / 0.04), 0 10px 28px -14px oklch(0.25 0.06 258 / 0.16);
+  --elevation-lift:
+    0 2px 4px oklch(0.25 0.06 258 / 0.05), 0 18px 40px -16px oklch(0.25 0.06 258 / 0.25);
 }
 
 @utility bg-hero {
   background-image: var(--gradient-hero);
+}
+
+html.large-text {
+  font-size: 125%;
+}
+
+html.high-contrast {
+  --foreground: oklch(0.12 0.04 258);
+  --card-foreground: oklch(0.12 0.04 258);
+  --muted-foreground: oklch(0.28 0.03 256);
+  --border: oklch(0.45 0.04 258);
+  --input: oklch(0.38 0.04 258);
+  --ring: oklch(0.62 0.18 192);
+}
+
+html.large-buttons button,
+html.large-buttons [role="button"] {
+  min-height: 3.25rem;
+  min-width: 3.25rem;
+}
+
+html.simple-interface .shadow-card,
+html.simple-interface .shadow-lift {
+  box-shadow: none;
+}
+
+html.simple-interface aside div.rounded-2xl:last-child,
+html.simple-interface footer,
+html.simple-interface [data-simple-hide="true"] {
+  display: none;
 }
 
 @layer base {

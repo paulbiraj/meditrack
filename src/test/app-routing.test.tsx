@@ -14,4 +14,11 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it("matches Settings and Caregiver routes", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    expect(router.matchRoutes("/settings").at(-1)?.routeId).not.toBe(rootRouteId);
+    expect(router.matchRoutes("/caregiver").at(-1)?.routeId).not.toBe(rootRouteId);
+  });
 });

@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as CaregiverRouteImport } from './routes/caregiver'
 import { Route as DosesRouteImport } from './routes/doses'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as MedicinesRouteImport } from './routes/medicines'
+import { Route as SettingsRouteImport } from './routes/settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaregiverRoute = CaregiverRouteImport.update({
+  id: '/caregiver',
+  path: '/caregiver',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DosesRoute = DosesRouteImport.update({
@@ -40,43 +47,78 @@ const MedicinesRoute = MedicinesRouteImport.update({
   path: '/medicines',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/caregiver': typeof CaregiverRoute
   '/doses': typeof DosesRoute
   '/history': typeof HistoryRoute
   '/medicines': typeof MedicinesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/caregiver': typeof CaregiverRoute
   '/doses': typeof DosesRoute
   '/history': typeof HistoryRoute
   '/medicines': typeof MedicinesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
+  '/caregiver': typeof CaregiverRoute
   '/doses': typeof DosesRoute
   '/history': typeof HistoryRoute
   '/medicines': typeof MedicinesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analytics' | '/doses' | '/history' | '/medicines'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/caregiver'
+    | '/doses'
+    | '/history'
+    | '/medicines'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analytics' | '/doses' | '/history' | '/medicines'
-  id: '__root__' | '/' | '/analytics' | '/doses' | '/history' | '/medicines'
+  to:
+    | '/'
+    | '/analytics'
+    | '/caregiver'
+    | '/doses'
+    | '/history'
+    | '/medicines'
+    | '/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/caregiver'
+    | '/doses'
+    | '/history'
+    | '/medicines'
+    | '/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
+  CaregiverRoute: typeof CaregiverRoute
   DosesRoute: typeof DosesRoute
   HistoryRoute: typeof HistoryRoute
   MedicinesRoute: typeof MedicinesRoute
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -93,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/analytics'
       preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/caregiver': {
+      id: '/caregiver'
+      path: '/caregiver'
+      fullPath: '/caregiver'
+      preLoaderRoute: typeof CaregiverRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/doses': {
@@ -116,15 +165,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MedicinesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
+  CaregiverRoute: CaregiverRoute,
   DosesRoute: DosesRoute,
   HistoryRoute: HistoryRoute,
   MedicinesRoute: MedicinesRoute,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

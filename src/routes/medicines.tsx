@@ -27,9 +27,16 @@ export const Route = createFileRoute("/medicines")({
   head: () => ({
     meta: [
       { title: "Medicines — MediTrack+" },
-      { name: "description", content: "Add, edit and remove your medicines with dosage, times, dates and instructions from your prescription." },
+      {
+        name: "description",
+        content:
+          "Add, edit and remove your medicines with dosage, times, dates and instructions from your prescription.",
+      },
       { property: "og:title", content: "Medicines — MediTrack+" },
-      { property: "og:description", content: "Keep every medicine and its schedule organised in one place." },
+      {
+        property: "og:description",
+        content: "Keep every medicine and its schedule organised in one place.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -43,7 +50,17 @@ const STATUS_STYLE = {
   ended: { label: "Ended", className: "bg-muted text-muted-foreground" },
 } as const;
 
-function MedicineCard({ med, today, onEdit, onDelete }: { med: Medicine; today: string; onEdit: () => void; onDelete: () => void }) {
+function MedicineCard({
+  med,
+  today,
+  onEdit,
+  onDelete,
+}: {
+  med: Medicine;
+  today: string;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const status = STATUS_STYLE[medicineStatus(med, today)];
   return (
     <article className="flex flex-col rounded-2xl border bg-card p-6 shadow-card">
@@ -54,7 +71,11 @@ function MedicineCard({ med, today, onEdit, onDelete }: { med: Medicine; today: 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-xl font-bold break-words">{med.name}</h2>
-            <span className={cn("rounded-full px-3 py-0.5 text-sm font-semibold", status.className)}>{status.label}</span>
+            <span
+              className={cn("rounded-full px-3 py-0.5 text-sm font-semibold", status.className)}
+            >
+              {status.label}
+            </span>
           </div>
           <p className="mt-1 text-lg text-foreground/80">{med.dosage}</p>
         </div>
@@ -68,7 +89,10 @@ function MedicineCard({ med, today, onEdit, onDelete }: { med: Medicine; today: 
             <p className="font-semibold">{describeFrequency(med)}</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {med.times.map((t) => (
-                <span key={t} className="rounded-lg bg-secondary px-3 py-1 font-semibold text-primary">
+                <span
+                  key={t}
+                  className="rounded-lg bg-secondary px-3 py-1 font-semibold text-primary"
+                >
                   {formatTime(t)}
                 </span>
               ))}
@@ -133,7 +157,11 @@ function MedicinesPage() {
       />
 
       {medicines.length === 0 ? (
-        <EmptyState icon={Pill} title="No medicines yet" description="Add your first medicine using the details on your prescription.">
+        <EmptyState
+          icon={Pill}
+          title="No medicines yet"
+          description="Add your first medicine using the details on your prescription."
+        >
           <Button size="lg" onClick={openAdd}>
             <Plus aria-hidden /> Add medicine
           </Button>
@@ -160,18 +188,26 @@ function MedicinesPage() {
 
       <SafetyNotice />
 
-      <MedicineDialog open={dialogOpen} onOpenChange={setDialogOpen} medicine={editing} />
+      <MedicineDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        medicine={editing ?? undefined}
+      />
 
       <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-2xl">Delete {deleting?.name}?</AlertDialogTitle>
+            <AlertDialogTitle className="font-display text-2xl">
+              Delete {deleting?.name}?
+            </AlertDialogTitle>
             <AlertDialogDescription className="text-base">
               Its upcoming doses will be removed. Doses you already recorded stay in your history.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>Keep it</AlertDialogCancel>
+            <AlertDialogCancel className={buttonVariants({ variant: "outline", size: "lg" })}>
+              Keep it
+            </AlertDialogCancel>
             <AlertDialogAction
               className={buttonVariants({ variant: "destructive", size: "lg" })}
               onClick={() => {

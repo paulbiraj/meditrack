@@ -2,7 +2,13 @@ import { Plus, Trash2 } from "lucide-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +39,19 @@ function emptyInput(): MedicineInput {
   };
 }
 
-function Field({ id, label, hint, error, children }: { id: string; label: string; hint?: string; error?: string; children: ReactNode }) {
+function Field({
+  id,
+  label,
+  hint,
+  error,
+  children,
+}: {
+  id: string;
+  label: string;
+  hint?: string | undefined;
+  error?: string | undefined;
+  children: ReactNode;
+}) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-base font-semibold text-foreground">
@@ -50,7 +68,7 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
   );
 }
 
-function MedicineForm({ initial, onDone }: { initial?: Medicine; onDone: () => void }) {
+function MedicineForm({ initial, onDone }: { initial?: Medicine | undefined; onDone: () => void }) {
   const [form, setForm] = useState<MedicineInput>(() =>
     initial
       ? {
@@ -151,11 +169,16 @@ function MedicineForm({ initial, onDone }: { initial?: Medicine; onDone: () => v
                     type="button"
                     aria-pressed={on}
                     onClick={() =>
-                      set("daysOfWeek", on ? form.daysOfWeek.filter((d) => d !== i) : [...form.daysOfWeek, i])
+                      set(
+                        "daysOfWeek",
+                        on ? form.daysOfWeek.filter((d) => d !== i) : [...form.daysOfWeek, i],
+                      )
                     }
                     className={cn(
                       "h-12 min-w-14 rounded-xl border-2 px-3 font-semibold transition-colors",
-                      on ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/40",
+                      on
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border hover:border-primary/40",
                     )}
                   >
                     {day}
@@ -163,14 +186,20 @@ function MedicineForm({ initial, onDone }: { initial?: Medicine; onDone: () => v
                 );
               })}
             </div>
-            {errors.daysOfWeek && <p role="alert" className="mt-2 text-sm font-semibold text-destructive">{errors.daysOfWeek}</p>}
+            {errors.daysOfWeek && (
+              <p role="alert" className="mt-2 text-sm font-semibold text-destructive">
+                {errors.daysOfWeek}
+              </p>
+            )}
           </div>
         )}
       </fieldset>
 
       <fieldset className="space-y-3">
         <legend className="text-base font-semibold text-foreground">Times to take it</legend>
-        <p className="text-sm text-muted-foreground">Each time becomes its own dose you can tick off.</p>
+        <p className="text-sm text-muted-foreground">
+          Each time becomes its own dose you can tick off.
+        </p>
         <div className="space-y-2">
           {form.times.map((t, i) => (
             <div key={i} className="flex items-center gap-2">
@@ -178,7 +207,12 @@ function MedicineForm({ initial, onDone }: { initial?: Medicine; onDone: () => v
                 type="time"
                 aria-label={`Time ${i + 1}`}
                 value={t}
-                onChange={(e) => set("times", form.times.map((x, j) => (j === i ? e.target.value : x)))}
+                onChange={(e) =>
+                  set(
+                    "times",
+                    form.times.map((x, j) => (j === i ? e.target.value : x)),
+                  )
+                }
                 className="max-w-48"
               />
               {form.times.length > 1 && (
@@ -187,7 +221,12 @@ function MedicineForm({ initial, onDone }: { initial?: Medicine; onDone: () => v
                   variant="ghost"
                   size="icon"
                   aria-label={`Remove time ${i + 1}`}
-                  onClick={() => set("times", form.times.filter((_, j) => j !== i))}
+                  onClick={() =>
+                    set(
+                      "times",
+                      form.times.filter((_, j) => j !== i),
+                    )
+                  }
                 >
                   <Trash2 aria-hidden />
                 </Button>
@@ -198,12 +237,21 @@ function MedicineForm({ initial, onDone }: { initial?: Medicine; onDone: () => v
         <Button type="button" variant="soft" onClick={addTime} disabled={form.times.length >= 8}>
           <Plus aria-hidden /> Add another time
         </Button>
-        {errors.times && <p role="alert" className="text-sm font-semibold text-destructive">{errors.times}</p>}
+        {errors.times && (
+          <p role="alert" className="text-sm font-semibold text-destructive">
+            {errors.times}
+          </p>
+        )}
       </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field id="med-start" label="Start date" error={errors.startDate}>
-          <Input id="med-start" type="date" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} />
+          <Input
+            id="med-start"
+            type="date"
+            value={form.startDate}
+            onChange={(e) => set("startDate", e.target.value)}
+          />
         </Field>
         <Field id="med-end" label="End date (optional)" error={errors.endDate}>
           <Input
@@ -216,7 +264,12 @@ function MedicineForm({ initial, onDone }: { initial?: Medicine; onDone: () => v
         </Field>
       </div>
 
-      <Field id="med-instructions" label="Instructions (optional)" hint="Copy them from your prescription or label." error={errors.instructions}>
+      <Field
+        id="med-instructions"
+        label="Instructions (optional)"
+        hint="Copy them from your prescription or label."
+        error={errors.instructions}
+      >
         <Textarea
           id="med-instructions"
           value={form.instructions}
@@ -245,18 +298,26 @@ export function MedicineDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  medicine?: Medicine;
+  medicine?: Medicine | undefined;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto rounded-2xl p-6 sm:p-8">
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl">{medicine ? "Edit medicine" : "Add a medicine"}</DialogTitle>
+          <DialogTitle className="font-display text-2xl">
+            {medicine ? "Edit medicine" : "Add a medicine"}
+          </DialogTitle>
           <DialogDescription className="text-base">
             Enter the details exactly as they appear on your prescription.
           </DialogDescription>
         </DialogHeader>
-        {open && <MedicineForm key={medicine?.id ?? "new"} initial={medicine} onDone={() => onOpenChange(false)} />}
+        {open && (
+          <MedicineForm
+            key={medicine?.id ?? "new"}
+            initial={medicine}
+            onDone={() => onOpenChange(false)}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

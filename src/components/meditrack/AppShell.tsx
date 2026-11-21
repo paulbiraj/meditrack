@@ -1,7 +1,19 @@
 import { Link, Outlet, useHydrated } from "@tanstack/react-router";
-import { BarChart3, ClipboardCheck, HeartPulse, History, LayoutDashboard, Pill, ShieldCheck } from "lucide-react";
+import {
+  BarChart3,
+  ClipboardCheck,
+  HeartPulse,
+  History,
+  LayoutDashboard,
+  Pill,
+  Settings,
+  ShieldCheck,
+  UsersRound,
+} from "lucide-react";
 import { useEffect } from "react";
-import { startClock } from "@/lib/meditrack/store";
+import { useAccessibilitySettings, useReminderSettings } from "@/lib/meditrack/preferences";
+import { notifyDueDoses } from "@/lib/meditrack/reminders";
+import { startClock, useAppData } from "@/lib/meditrack/store";
 
 const NAV = [
   { to: "/", label: "Dashboard", short: "Home", icon: LayoutDashboard },
@@ -9,6 +21,8 @@ const NAV = [
   { to: "/medicines", label: "Medicines", short: "Medicines", icon: Pill },
   { to: "/history", label: "History", short: "History", icon: History },
   { to: "/analytics", label: "Analytics", short: "Analytics", icon: BarChart3 },
+  { to: "/caregiver", label: "Caregiver View", short: "Caregiver", icon: UsersRound },
+  { to: "/settings", label: "Settings", short: "Settings", icon: Settings },
 ] as const;
 
 function Logo({ onDark = false }: { onDark?: boolean }) {
@@ -46,7 +60,27 @@ function PageSkeleton() {
 
 export function AppShell() {
   const hydrated = useHydrated();
+  const accessibility = useAccessibilitySettings();
+  const reminders = useReminderSettings();
+  const { doses } = useAppData();
+
   useEffect(() => startClock(), []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("large-text", accessibility.largeText);
+    root.classList.toggle("high-contrast", accessibility.highContrast);
+    root.classList.toggle("large-buttons", accessibility.largeButtons);
+    root.classList.toggle("simple-interface", accessibility.simpleInterface);
+  }, [accessibility]);
+
+  useEffect(() => {
+    if (!reminders.enabled) return;
+    const scan = () => notifyDueDoses(doses, new Date());
+    scan();
+    const interval = window.setInterval(scan, 30_000);
+    return () => window.clearInterval(interval);
+  }, [doses, reminders.enabled]);
 
   return (
     <div className="min-h-screen bg-background lg:flex">
@@ -60,7 +94,9 @@ export function AppShell() {
               to={to}
               activeOptions={{ exact: to === "/" }}
               className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-base font-semibold text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground shadow-card" }}
+              activeProps={{
+                className: "bg-sidebar-accent text-sidebar-accent-foreground shadow-card",
+              }}
             >
               <Icon className="size-5" aria-hidden />
               {label}
@@ -69,8 +105,8 @@ export function AppShell() {
         </nav>
         <div className="mt-auto rounded-2xl bg-sidebar-accent p-4 text-sm leading-relaxed">
           <ShieldCheck className="mb-2 size-5 text-sidebar-primary" aria-hidden />
-          Always take medicines exactly as prescribed. MediTrack+ is a reminder tool and does not give
-          medical advice.
+          Always take medicines exactly as prescribed. MediTrack+ is a reminder tool and does not
+          give medical advice.
         </div>
       </aside>
 
@@ -93,7 +129,7 @@ export function AppShell() {
       {/* Mobile bottom navigation */}
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t bg-background/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-7 border-t bg-background/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
       >
         {NAV.map(({ to, short, icon: Icon }) => (
           <Link

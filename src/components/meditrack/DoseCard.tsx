@@ -1,7 +1,13 @@
 import { Check, Undo2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { formatActionDateTime, formatActionTime, formatDateShort, formatTime, toDateKey } from "@/lib/meditrack/dates";
+import {
+  formatActionDateTime,
+  formatActionTime,
+  formatDateShort,
+  formatTime,
+  toDateKey,
+} from "@/lib/meditrack/dates";
 import { deriveState } from "@/lib/meditrack/schedule";
 import { recordDose, undoDose } from "@/lib/meditrack/store";
 import type { DoseAction, DoseRecord } from "@/lib/meditrack/types";
@@ -18,10 +24,10 @@ export function handleDoseAction(dose: DoseRecord, action: DoseAction) {
     );
     return;
   }
-  toast.success(
-    `${dose.medicineName} — ${formatTime(dose.time)} marked as ${action}`,
-    { action: { label: "Undo", onClick: () => undoDose(dose.id) }, duration: 6000 },
-  );
+  toast.success(`${dose.medicineName} — ${formatTime(dose.time)} marked as ${action}`, {
+    action: { label: "Undo", onClick: () => undoDose(dose.id) },
+    duration: 6000,
+  });
 }
 
 export function DoseCard({
@@ -33,7 +39,7 @@ export function DoseCard({
 }: {
   dose: DoseRecord;
   now: Date;
-  instructions?: string;
+  instructions?: string | undefined;
   showDate?: boolean;
   highlight?: boolean;
 }) {
@@ -52,8 +58,14 @@ export function DoseCard({
     >
       <div className="flex min-w-0 flex-1 items-start gap-4">
         <div className="w-24 shrink-0 rounded-xl bg-surface px-2 py-2.5 text-center">
-          <p className="font-display text-xl font-bold leading-tight text-primary">{formatTime(dose.time)}</p>
-          {showDate && <p className="mt-0.5 text-xs font-semibold text-muted-foreground">{formatDateShort(dose.date)}</p>}
+          <p className="font-display text-xl font-bold leading-tight text-primary">
+            {formatTime(dose.time)}
+          </p>
+          {showDate && (
+            <p className="mt-0.5 text-xs font-semibold text-muted-foreground">
+              {formatDateShort(dose.date)}
+            </p>
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -64,7 +76,10 @@ export function DoseCard({
           {instructions && <p className="mt-1 text-base text-muted-foreground">{instructions}</p>}
           {dose.actionAt && (
             <p className="mt-1 text-sm font-semibold text-muted-foreground">
-              Recorded {isPast ? formatActionDateTime(dose.actionAt) : `at ${formatActionTime(dose.actionAt)}`}
+              Recorded{" "}
+              {isPast
+                ? formatActionDateTime(dose.actionAt)
+                : `at ${formatActionTime(dose.actionAt)}`}
             </p>
           )}
         </div>
