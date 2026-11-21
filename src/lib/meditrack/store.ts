@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { toDateKey } from "./dates";
 import { applyDoseAction, normalizeTimes, syncDoses, undoDoseAction, type ActionResult } from "./schedule";
-import type { AppData, DoseAction, Medicine, MedicineInput } from "./types";
+import type { AppData, DoseAction, DoseRecord, Medicine, MedicineInput } from "./types";
 
 const STORAGE_KEY = "meditrack-plus:v1";
 const EMPTY: AppData = { medicines: [], doses: [] };
@@ -18,15 +18,49 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isMedicineArray(value: unknown): value is Medicine[] {
+  return Array.isArray(value) && value.every((item) => {
+    if (!isRecord(item)) return false;
+    return (
+      typeof item.id === "string" &&
+      typeof item.name === "string" &&
+      typeof item.dosage === "string" &&
+      typeof item.frequency === "string" &&
+      typeof item.startDate === "string" &&
+      Array.isArray(item.times) &&
+      item.times.every((time) => typeof time === "string")
+    );
+  });
+}
+
+function isDoseArray(value: unknown): value is DoseRecord[] {
+  return Array.isArray(value) && value.every((item) => {
+    if (!isRecord(item)) return false;
+    return (
+      typeof item.id === "string" &&
+      typeof item.medicineId === "string" &&
+      typeof item.medicineName === "string" &&
+      typeof item.dosage === "string" &&
+      typeof item.date === "string" &&
+      typeof item.time === "string" &&
+      (item.status === "pending" || item.status === "taken" || item.status === "skipped")
+    );
+  });
+}
+
 function readStorage(): AppData {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as Partial<AppData>;
-    return {
-      medicines: Array.isArray(parsed.medicines) ? parsed.medicines : [],
-      doses: Array.isArray(parsed.doses) ? parsed.doses : [],
-    };
+    const parsed: unknown = JSON.parse(raw);
+    if (!isRecord(parsed) || !isMedicineArray(parsed.medicines) || !isDoseArray(parsed.doses)) {
+      return EMPTY;
+    }
+    return { medicines: parsed.medicines, doses: parsed.doses };
   } catch {
     return EMPTY;
   }

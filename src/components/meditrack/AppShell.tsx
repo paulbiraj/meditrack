@@ -64,7 +64,9 @@ export function AppShell() {
   const reminders = useReminderSettings();
   const { doses } = useAppData();
 
-  useEffect(() => startClock(), []);
+  useEffect(() => {
+    return startClock();
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;

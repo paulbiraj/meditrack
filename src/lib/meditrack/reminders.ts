@@ -6,7 +6,9 @@ const NOTIFIED_KEY = "meditrack-plus:notified-doses:v1";
 function getNotified(): Set<string> {
   if (typeof window === "undefined") return new Set();
   try {
-    return new Set(JSON.parse(window.localStorage.getItem(NOTIFIED_KEY) ?? "[]") as string[]);
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(NOTIFIED_KEY) ?? "[]");
+    if (!Array.isArray(parsed)) return new Set();
+    return new Set(parsed.filter((id): id is string => typeof id === "string" && id.length > 0));
   } catch {
     return new Set();
   }

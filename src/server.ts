@@ -47,17 +47,31 @@ function isH3SwallowedErrorBody(body: string): boolean {
 // Hosting compresses every response at the edge. Never compress a body (gzip, brotli,
 // CompressionStream) or set content-encoding here or in a server route: the body gets encoded
 // twice and renders garbled.
+function secureHeaders(headers: Headers): Headers {
+  const secured = new Headers(headers);
+  secured.set("X-Content-Type-Options", "nosniff");
+  secured.set("X-Frame-Options", "DENY");
+  secured.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  secured.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  return secured;
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalized = await normalizeCatastrophicSsrResponse(response);
+      return new Response(normalized.body, {
+        status: normalized.status,
+        statusText: normalized.statusText,
+        headers: secureHeaders(normalized.headers),
+      });
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,
-        headers: { "content-type": "text/html; charset=utf-8" },
+        headers: secureHeaders(new Headers({ "content-type": "text/html; charset=utf-8" })),
       });
     }
   },

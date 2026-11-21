@@ -29,7 +29,14 @@ const listeners = new Set<() => void>();
 function readJson<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
-    return { ...fallback, ...JSON.parse(window.localStorage.getItem(key) ?? "{}") } as T;
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(key) ?? "{}");
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return fallback;
+
+    const result = { ...fallback } as Record<string, unknown>;
+    for (const [name, value] of Object.entries(parsed)) {
+      if (typeof value === typeof result[name]) result[name] = value;
+    }
+    return result as T;
   } catch {
     return fallback;
   }
