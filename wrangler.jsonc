@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "meditrack-plus",
+  "compatibility_date": "2026-11-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/server.ts",
+  "upload_source_maps": true,
+  "observability": {
+    "enabled": true,
+  },
+}
